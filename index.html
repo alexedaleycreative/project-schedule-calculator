@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L&D Project Hours Calculator</title>
+<style>
+  :root {
+    --primary: #2D585C;
+    --primary-light: #3E7A7E;
+    --primary-bg: #E4F0F0;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #5a5a5a;
+    --border: #d4d4d4;
+    --success: #2D585C;
+    --evaluation: #1a1a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f8fafc;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+  }
+
+  header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 2.5rem;
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .step-circle.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+  }
+
+  .step-circle.done {
+    border-color: var(--success);
+    background: var(--success);
+    color: white;
+  }
+
+  .step-line {
+    width: 60px;
+    height: 2px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .step-line.done {
+    background: var(--success);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    margin-bottom: 1.5rem;
+  }
+
+  .card h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .card .subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hidden { display: none !important; }
+
+  /* Form elements */
+  .form-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .form-group {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+  }
+
+  .info-box {
+    background: var(--primary-bg);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .info-box .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .info-box .value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .info-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .info-row .info-box { flex: 1; min-width: 180px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover { background: #224446; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--text-muted); }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+  }
+
+  .error-msg {
+    color: #dc2626;
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+  }
+
+  /* Phase breakdown table */
+  .phase-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1rem 0;
+  }
+
+  .phase-table th {
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .phase-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  .phase-table tr:last-child td { border-bottom: none; }
+
+  .phase-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .phase-hours {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .phase-bar-cell { width: 40%; }
+
+  .phase-bar-track {
+    height: 10px;
+    background: #f1f5f9;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .phase-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.6s ease;
+  }
+
+  /* Gantt chart */
+  .gantt-container {
+    overflow-x: auto;
+    margin: 1.25rem 0;
+  }
+
+  .gantt {
+    min-width: 100%;
+    position: relative;
+  }
+
+  .gantt-header {
+    display: flex;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+  }
+
+  .gantt-header-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-align: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .gantt-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .gantt-label {
+    width: 140px;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .gantt-track {
+    flex: 1;
+    height: 28px;
+    background: #f8fafc;
+    border-radius: 4px;
+    position: relative;
+  }
+
+  .gantt-bar {
+    position: absolute;
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 0.5rem;
+    min-width: 2px;
+    transition: all 0.4s ease;
+  }
+
+  .gantt-bar:hover {
+    opacity: 0.85;
+    transform: scaleY(1.1);
+  }
+
+  .gantt-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+
+  .gantt-bar:hover .gantt-tooltip { opacity: 1; }
+
+  .gantt-today {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #ef4444;
+    z-index: 5;
+  }
+
+  .gantt-today::after {
+    content: 'Today';
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: #ef4444;
+    font-weight: 600;
+  }
+
+  /* Summary cards */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .summary-card {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .summary-card .s-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .summary-card .s-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  /* Percentage input styling */
+  .pct-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .pct-input-wrap input[type="range"] {
+    flex: 1;
+    accent-color: var(--primary);
+    height: 6px;
+  }
+
+  .pct-display {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* Reset button */
+  .reset-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-top: 1rem;
+  }
+
+  .reset-btn:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    body { padding: 1rem 0.5rem; }
+    .card { padding: 1.25rem; }
+    .form-row { flex-direction: column; gap: 0.75rem; }
+    .gantt-label { width: 100px; font-size: 0.7rem; }
+    .step-line { width: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>L&D Project Hours Calculator</h1>
+    <p>Plan your learning & development project timeline step by step</p>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="step-circle active" id="pc1">1</div>
+    <div class="step-line" id="pl1"></div>
+    <div class="step-circle" id="pc2">2</div>
+    <div class="step-line" id="pl2"></div>
+    <div class="step-circle" id="pc3">3</div>
+  </div>
+
+  <!-- STEP 1: Dates -->
+  <div class="card" id="step1">
+    <h2>Step 1: Project Dates</h2>
+    <p class="subtitle">Enter the start and launch dates for your L&D project. The launch date marks the end of the Implementation phase; the Evaluation phase will be calculated beyond this date.</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="form-group">
+        <label for="endDate">Launch Date</label>
+        <input type="date" id="endDate">
+      </div>
+    </div>
+    <div id="step1Error" class="error-msg hidden"></div>
+    <div class="btn-row">
+      <span></span>
+      <button class="btn btn-primary" id="btn1Next" onclick="goToStep2()">Next &rarr;</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Percentage -->
+  <div class="card hidden" id="step2">
+    <h2>Step 2: Time Dedication</h2>
+    <p class="subtitle">How much of your available working time will you dedicate to this project?</p>
+
+    <div class="info-row">
+      <div class="info-box">
+        <div class="label">Workdays (Start–Launch)</div>
+        <div class="value" id="totalWorkdays">—</div>
+      </div>
+      <div class="info-box">
+        <div class="label">Available Hours (Start–Launch)</div>
+        <div class="value" id="totalAvailHours">—</div>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top:1rem;">
+      <label>Percentage of Available Hours</label>
+      <div class="pct-input-wrap">
+        <input type="range" id="pctSlider" min="1" max="100" value="50" oninput="updatePct()">
+        <div class="pct-display" id="pctDisplay">50%</div>
+      </div>
+    </div>
+
+    <div class="info-row" style="margin-top:1rem;">
+      <div class="info-box">
+        <div class="label">Hours for Phases 1–5 (95%)</div>
+        <div class="value" id="totalCoreHours">—</div>
+      </div>
+      <div class="info-box">
+        <div class="label">Total Project Hours (incl. Evaluation)</div>
+        <div class="value" id="totalProjectHours">—</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep1()">&larr; Back</button>
+      <button class="btn btn-primary" onclick="goToStep3()">Calculate &amp; Generate Timeline &rarr;</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Results -->
+  <div class="card hidden" id="step3">
+    <h2>Phase Breakdown</h2>
+    <p class="subtitle">Hours allocated to each project phase based on your inputs.</p>
+
+    <div class="summary-grid" id="summaryGrid"></div>
+
+    <table class="phase-table">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Allocation</th>
+          <th>Hours</th>
+          <th class="phase-bar-cell">Distribution</th>
+        </tr>
+      </thead>
+      <tbody id="phaseTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="card hidden" id="step3timeline">
+    <h2>Suggested Timeline</h2>
+    <p class="subtitle">Sequential schedule with hours distributed evenly across workdays. Hover over a bar for details.</p>
+    <div class="gantt-container" id="ganttContainer"></div>
+
+    <div id="scheduleDetails" style="margin-top:1.25rem;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep2FromResults()">&larr; Back</button>
+      <button class="reset-btn" onclick="resetAll()">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const PHASES = [
+    { name: 'Discovery',      pct: 0.05, color: '#7AC4C8' },
+    { name: 'Analysis',       pct: 0.10, color: '#4A9BA0' },
+    { name: 'Design',         pct: 0.25, color: '#2D585C' },
+    { name: 'Development',    pct: 0.50, color: '#1E3D40' },
+    { name: 'Implementation', pct: 0.05, color: '#3E7A7E' },
+    { name: 'Evaluation',     pct: 0.05, color: '#1a1a1a' },
+  ];
+
+  // Phases 1-5 sum to 95%; Evaluation (5%) extends beyond Launch Date
+  const CORE_PCT = 0.95; // sum of first 5 phases
+
+  let state = {
+    startDate: null,
+    endDate: null,
+    workdays: 0,        // workdays between Start and End (covers phases 1-5)
+    availableHours: 0,   // workdays * 8
+    pct: 50,
+    coreHours: 0,        // hours dedicated to phases 1-5 within the date range
+    projectHours: 0,     // total project hours including Evaluation
+    phases: [],
+  };
+
+  // ---- Date helpers ----
+  function countWorkdays(start, end) {
+    let count = 0;
+    let d = new Date(start);
+    const e = new Date(end);
+    while (d <= e) {
+      const day = d.getDay();
+      if (day !== 0 && day !== 6) count++;
+      d.setDate(d.getDate() + 1);
+    }
+    return count;
+  }
+
+  function addWorkdays(start, numDays) {
+    let d = new Date(start);
+    let added = 0;
+    if (numDays <= 0) return new Date(d);
+    while (added < numDays) {
+      d.setDate(d.getDate() + 1);
+      if (d.getDay() !== 0 && d.getDay() !== 6) added++;
+    }
+    return d;
+  }
+
+  function fmtDate(d) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+
+  function fmtShort(d) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}`;
+  }
+
+  // ---- Navigation ----
+  function showStep(n) {
+    document.getElementById('step1').classList.toggle('hidden', n !== 1);
+    document.getElementById('step2').classList.toggle('hidden', n !== 2);
+    document.getElementById('step3').classList.toggle('hidden', n !== 3);
+    document.getElementById('step3timeline').classList.toggle('hidden', n !== 3);
+
+    for (let i = 1; i <= 3; i++) {
+      const circle = document.getElementById('pc' + i);
+      circle.classList.remove('active', 'done');
+      if (i < n) { circle.classList.add('done'); circle.innerHTML = '&#10003;'; }
+      else if (i === n) { circle.classList.add('active'); circle.textContent = i; }
+      else { circle.textContent = i; }
+    }
+    for (let i = 1; i <= 2; i++) {
+      document.getElementById('pl' + i).classList.toggle('done', i < n);
+    }
+  }
+
+  function goToStep1() { showStep(1); }
+
+  function goToStep2() {
+    const errEl = document.getElementById('step1Error');
+    errEl.classList.add('hidden');
+
+    const sVal = document.getElementById('startDate').value;
+    const eVal = document.getElementById('endDate').value;
+
+    if (!sVal || !eVal) { errEl.textContent = 'Please enter both dates.'; errEl.classList.remove('hidden'); return; }
+
+    const s = new Date(sVal + 'T00:00:00');
+    const e = new Date(eVal + 'T00:00:00');
+
+    if (e <= s) { errEl.textContent = 'Launch date must be after the start date.'; errEl.classList.remove('hidden'); return; }
+
+    state.startDate = s;
+    state.endDate = e;
+    state.workdays = countWorkdays(s, e);
+    state.availableHours = state.workdays * 8;
+
+    if (state.workdays === 0) { errEl.textContent = 'The selected range contains no workdays.'; errEl.classList.remove('hidden'); return; }
+
+    document.getElementById('totalWorkdays').textContent = state.workdays;
+    document.getElementById('totalAvailHours').textContent = state.availableHours + ' hrs';
+    updatePct();
+    showStep(2);
+  }
+
+  function goToStep2FromResults() { showStep(2); }
+
+  function updatePct() {
+    const v = parseInt(document.getElementById('pctSlider').value);
+    state.pct = v;
+    document.getElementById('pctDisplay').textContent = v + '%';
+    // Core hours = what fits in the Start-End date range (phases 1-5 = 95%)
+    state.coreHours = parseFloat(((state.availableHours * v) / 100).toFixed(1));
+    // Total project hours = core hours / 0.95 (so Evaluation's 5% is on top)
+    state.projectHours = parseFloat((state.coreHours / CORE_PCT).toFixed(1));
+    document.getElementById('totalCoreHours').textContent = state.coreHours + ' hrs';
+    document.getElementById('totalProjectHours').textContent = state.projectHours + ' hrs';
+  }
+
+  function goToStep3() {
+    // Calculate phase hours
+    state.phases = PHASES.map(p => ({
+      ...p,
+      hours: parseFloat((state.projectHours * p.pct).toFixed(1)),
+    }));
+
+    renderTimeline();   // must run first — builds schedule and populates summary grid
+    renderPhaseTable();
+    showStep(3);
+  }
+
+  // ---- Rendering ----
+  function renderPhaseTable() {
+    const maxHours = Math.max(...state.phases.map(p => p.hours));
+    const tbody = document.getElementById('phaseTableBody');
+    tbody.innerHTML = '';
+
+    state.phases.forEach(p => {
+      const pctWidth = maxHours > 0 ? (p.hours / maxHours) * 100 : 0;
+      tbody.innerHTML += `
+        <tr>
+          <td><span class="phase-dot" style="background:${p.color}"></span>${p.name}</td>
+          <td>${(p.pct * 100).toFixed(0)}%</td>
+          <td class="phase-hours">${p.hours} hrs</td>
+          <td class="phase-bar-cell">
+            <div class="phase-bar-track">
+              <div class="phase-bar-fill" style="width:${pctWidth}%;background:${p.color}"></div>
+            </div>
+          </td>
+        </tr>`;
+    });
+
+  }
+
+  function renderTimeline() {
+    // --- Phases 1-5 (Discovery–Implementation) fill exactly state.workdays ---
+    const corePhases = state.phases.slice(0, 5); // first 5
+    const evalPhase  = state.phases[5];           // Evaluation
+
+    const W = state.workdays;
+    // Distribute W workdays across the 5 core phases proportionally using
+    // each phase's share *relative to the core total* (95%).
+    const rawDays = corePhases.map(p => W * (p.pct / CORE_PCT));
+    const floored = rawDays.map(d => Math.max(1, Math.floor(d)));
+    let assigned = floored.reduce((a, b) => a + b, 0);
+    const remainders = rawDays.map((d, i) => ({ i, r: d - floored[i] }));
+    remainders.sort((a, b) => b.r - a.r);
+    for (let k = 0; assigned < W && k < remainders.length; k++) {
+      floored[remainders[k].i]++;
+      assigned++;
+    }
+    if (assigned > W) {
+      const ascending = [...remainders].reverse();
+      for (let k = 0; assigned > W && k < ascending.length; k++) {
+        if (floored[ascending[k].i] > 1) { floored[ascending[k].i]--; assigned--; }
+      }
+    }
+
+    // Build schedule for phases 1-5
+    let cursor = new Date(state.startDate);
+    const schedule = [];
+
+    corePhases.forEach((p, idx) => {
+      const daysNeeded = floored[idx];
+      const phaseStart = new Date(cursor);
+      const phaseEnd = daysNeeded > 1 ? addWorkdays(phaseStart, daysNeeded - 1) : new Date(phaseStart);
+      const dailyActual = daysNeeded > 0 ? parseFloat((p.hours / daysNeeded).toFixed(1)) : 0;
+
+      schedule.push({
+        ...p,
+        start: phaseStart,
+        end: phaseEnd,
+        workdays: daysNeeded,
+        dailyHours: dailyActual,
+      });
+
+      cursor = addWorkdays(phaseEnd, 1);
+    });
+
+    // --- Evaluation phase: extends beyond the entered Launch Date ---
+    // Calculate workdays needed for Evaluation using the same daily dedication rate
+    const dailyHours = (state.pct / 100) * 8;
+    const evalDays = dailyHours > 0 ? Math.max(1, Math.ceil(evalPhase.hours / dailyHours)) : 1;
+    const evalStart = new Date(cursor); // first workday after Implementation ends
+    const evalEnd = evalDays > 1 ? addWorkdays(evalStart, evalDays - 1) : new Date(evalStart);
+    const evalDaily = evalDays > 0 ? parseFloat((evalPhase.hours / evalDays).toFixed(1)) : 0;
+
+    schedule.push({
+      ...evalPhase,
+      start: evalStart,
+      end: evalEnd,
+      workdays: evalDays,
+      dailyHours: evalDaily,
+    });
+
+    // Summary grid — now that schedule is built, we can reference evalEnd
+    const grid = document.getElementById('summaryGrid');
+    grid.innerHTML = `
+      <div class="summary-card">
+        <div class="s-label">Phases 1–5 Span</div>
+        <div class="s-value">${fmtShort(state.startDate)} – ${fmtShort(state.endDate)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Dedication</div>
+        <div class="s-value">${state.pct}%</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Total Project Hours</div>
+        <div class="s-value">${state.projectHours} hrs</div>
+      </div>
+      <div class="summary-card" style="border:2px solid #1a1a1a;background:#f0f0f0;">
+        <div class="s-label">Evaluation Ends</div>
+        <div class="s-value" style="color:#1a1a1a">${fmtShort(schedule[5].end)}</div>
+      </div>`;
+
+    // Render Gantt
+    const totalCalendarDays = Math.ceil((schedule[schedule.length - 1].end - state.startDate) / 86400000) + 1;
+
+    const container = document.getElementById('ganttContainer');
+    let html = '<div class="gantt">';
+
+    // Header: month markers
+    html += '<div class="gantt-header" style="padding-left:140px;">';
+    const headerStart = new Date(state.startDate);
+    const headerEnd = new Date(schedule[schedule.length - 1].end);
+    let monthCursor = new Date(headerStart.getFullYear(), headerStart.getMonth(), 1);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    while (monthCursor <= headerEnd) {
+      const mStart = new Date(Math.max(monthCursor, headerStart));
+      const nextMonth = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1);
+      const mEnd = new Date(Math.min(nextMonth - 86400000, headerEnd));
+      const span = Math.ceil((mEnd - mStart) / 86400000) + 1;
+      const widthPct = (span / totalCalendarDays) * 100;
+      html += `<div class="gantt-header-label" style="width:${widthPct}%">${months[monthCursor.getMonth()]} ${monthCursor.getFullYear()}</div>`;
+      monthCursor = nextMonth;
+    }
+    html += '</div>';
+
+    // End-date boundary marker position
+    const endDateOffset = Math.ceil((state.endDate - state.startDate) / 86400000) + 1;
+    const endDatePct = (endDateOffset / totalCalendarDays) * 100;
+
+    // Gantt body wrapper (relative, so we can overlay the boundary marker)
+    html += '<div style="position:relative;">';
+
+    // Rows
+    schedule.forEach((phase, idx) => {
+      const offsetDays = Math.ceil((phase.start - state.startDate) / 86400000);
+      const spanDays = Math.ceil((phase.end - phase.start) / 86400000) + 1;
+      const leftPct = (offsetDays / totalCalendarDays) * 100;
+      const widthPct = (spanDays / totalCalendarDays) * 100;
+      const isEval = idx === 5;
+
+      html += `
+        <div class="gantt-row">
+          <div class="gantt-label">
+            <span class="phase-dot" style="background:${phase.color}"></span>
+            ${phase.name}
+          </div>
+          <div class="gantt-track">
+            <div class="gantt-bar" style="left:${leftPct}%;width:${widthPct}%;background:${phase.color};${isEval ? 'opacity:0.7;border:2px dashed ' + phase.color + ';' : ''}">
+              ${widthPct > 8 ? phase.hours + ' hrs' : ''}
+              <div class="gantt-tooltip">
+                <strong>${phase.name}</strong>${isEval ? ' (beyond Launch Date)' : ''}<br>
+                ${fmtDate(phase.start)} — ${fmtDate(phase.end)}<br>
+                ${phase.workdays} workdays &middot; ${phase.hours} hrs &middot; ~${phase.dailyHours} hrs/day
+              </div>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    // Vertical boundary line at the entered Launch Date
+    html += `<div style="position:absolute;top:0;bottom:0;left:calc(140px + (100% - 140px) * ${endDatePct} / 100);width:2px;background:#1a1a1a;z-index:5;pointer-events:none;">
+      <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:0.65rem;color:#1a1a1a;font-weight:600;white-space:nowrap;">Launch Date</div>
+    </div>`;
+
+    html += '</div>'; // close body wrapper
+    html += '</div>'; // close gantt
+    container.innerHTML = html;
+
+    // Schedule details table
+    const details = document.getElementById('scheduleDetails');
+    let dhtml = '<table class="phase-table"><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Workdays</th><th>Hours</th><th>Hrs/Day</th></tr></thead><tbody>';
+    schedule.forEach((p, idx) => {
+      const isEval = idx === 5;
+      dhtml += `<tr${isEval ? ' style="background:#f0f0f0;"' : ''}>
+        <td><span class="phase-dot" style="background:${p.color}"></span>${p.name}${isEval ? ' *' : ''}</td>
+        <td>${fmtDate(p.start)}</td>
+        <td>${fmtDate(p.end)}</td>
+        <td>${p.workdays}</td>
+        <td class="phase-hours">${p.hours}</td>
+        <td>~${p.dailyHours}</td>
+      </tr>`;
+    });
+    dhtml += '</tbody></table>';
+    dhtml += '<p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem;">* Evaluation phase extends beyond the entered Launch Date.</p>';
+    details.innerHTML = dhtml;
+  }
+
+  function resetAll() {
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    document.getElementById('pctSlider').value = 50;
+    state = { startDate: null, endDate: null, workdays: 0, availableHours: 0, pct: 50, coreHours: 0, projectHours: 0, phases: [] };
+    showStep(1);
+  }
+
+  // Init
+  showStep(1);
+</script>
+</body>
+</html>
