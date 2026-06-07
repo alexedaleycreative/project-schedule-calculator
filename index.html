@@ -340,7 +340,7 @@
       <span class="card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10zM7 11h5v5H7z"/></svg></span>
       <div class="card-head-text">
         <h2>Project Dates</h2>
-        <p class="subtitle">Enter the start and launch dates. The launch date marks the end of the Project Close phase; Evaluation extends beyond it.</p>
+        <p class="subtitle">Enter the start and launch dates. The launch date marks the end of the Execute phase; Yield extends beyond it.</p>
       </div>
     </div>
     <div class="form-row">
@@ -392,7 +392,7 @@
         <div class="value" id="launch-totalCoreHours">—</div>
       </div>
       <div class="info-box">
-        <div class="label">Total Project Hours (incl. Evaluation)</div>
+        <div class="label">Total Project Hours (incl. Yield)</div>
         <div class="value" id="launch-totalProjectHours">—</div>
       </div>
     </div>
@@ -566,15 +566,13 @@
 <script>
 // ================= CONSTANTS =================
 const PHASES = [
-  { name: 'Discovery',      pct: 0.05,  color: '#5CC4D4' },
-  { name: 'Analysis',       pct: 0.10,  color: '#00A9C9' },
-  { name: 'Design',         pct: 0.25,  color: '#017A91' },
-  { name: 'Development',    pct: 0.50,  color: '#013B46' },
-  { name: 'Implementation', pct: 0.025, color: '#02697D' },
-  { name: 'Project Close',  pct: 0.025, color: '#2D9DB0' },
-  { name: 'Evaluation',     pct: 0.05,  color: '#0d1719' },
+  { name: 'Discover',          pct: 0.05, color: '#5CC4D4' },
+  { name: 'Analyze',           pct: 0.20, color: '#00A9C9' },
+  { name: 'Learning Solution', pct: 0.50, color: '#017A91' },
+  { name: 'Execute',           pct: 0.05, color: '#013B46' },
+  { name: 'Yield',             pct: 0.20, color: '#02697D' },
 ];
-const CORE_PCT = 0.95;
+const CORE_PCT = 0.80;
 
 const BENCHMARKS = {
   elearning:     { basic: 15, moderate: 30, complex: 55, immersive: 100 },
@@ -963,7 +961,7 @@ function onReviewPctInput() {
 
 function recalcAndUpdateProjection() {
   const dailyHrs = R((state.pct / 100) * 8);
-  const coreHrs = R(state.phases.slice(0, 6).reduce((s, p) => s + p.hours, 0));
+  const coreHrs = R(state.phases.slice(0, 4).reduce((s, p) => s + p.hours, 0));
   const wd = dailyHrs > 0 ? Math.ceil(coreHrs / dailyHrs) : 0;
   const endD = wd > 0 ? addWorkdays(state.startDate, wd - 1) : new Date(state.startDate);
   document.getElementById('review-projected-date').textContent = fmtDate(endD);
@@ -986,7 +984,7 @@ function resetToCalculated() {
 
 function hoursGoToResults() {
   const dailyHrs = R((state.pct / 100) * 8);
-  const coreHrs = R(state.phases.slice(0, 6).reduce((s, p) => s + p.hours, 0));
+  const coreHrs = R(state.phases.slice(0, 4).reduce((s, p) => s + p.hours, 0));
   state.coreHours = coreHrs;
   state.projectHours = R(state.phases.reduce((s, p) => s + p.hours, 0));
   state.workdays = dailyHrs > 0 ? Math.ceil(coreHrs / dailyHrs) : 1;
@@ -1013,8 +1011,8 @@ function renderPhaseTable() {
 }
 
 function renderTimeline() {
-  const corePhases = state.phases.slice(0, 6);
-  const evalPhase  = state.phases[6];
+  const corePhases = state.phases.slice(0, 4);
+  const yieldPhase = state.phases[4];
   const W = state.workdays;
 
   // Distribute workdays by actual hours (works for both custom & default allocations)
@@ -1030,7 +1028,7 @@ function renderTimeline() {
     for (let k = 0; assigned > W && k < asc.length; k++) { if (floored[asc[k].i] > 1) { floored[asc[k].i]--; assigned--; } }
   }
 
-  // Build schedule for phases 1-6
+  // Build schedule for core phases
   let cursor = new Date(state.startDate);
   const schedule = [];
   corePhases.forEach((p, idx) => {
@@ -1041,12 +1039,12 @@ function renderTimeline() {
     cursor = addWorkdays(pe, 1);
   });
 
-  // Evaluation phase beyond launch
+  // Yield phase beyond launch
   const dailyHours = (state.pct / 100) * 8;
-  const evalDays = dailyHours > 0 ? Math.max(1, Math.ceil(evalPhase.hours / dailyHours)) : 1;
-  const evalStart = new Date(cursor);
-  const evalEnd = evalDays > 1 ? addWorkdays(evalStart, evalDays - 1) : new Date(evalStart);
-  schedule.push({ ...evalPhase, start: evalStart, end: evalEnd, workdays: evalDays, dailyHours: evalDays > 0 ? R(evalPhase.hours / evalDays) : 0 });
+  const yieldDays = dailyHours > 0 ? Math.max(1, Math.ceil(yieldPhase.hours / dailyHours)) : 1;
+  const yieldStart = new Date(cursor);
+  const yieldEnd = yieldDays > 1 ? addWorkdays(yieldStart, yieldDays - 1) : new Date(yieldStart);
+  schedule.push({ ...yieldPhase, start: yieldStart, end: yieldEnd, workdays: yieldDays, dailyHours: yieldDays > 0 ? R(yieldPhase.hours / yieldDays) : 0 });
 
   // Summary grid
   const launchLabel = state.mode === 'launch' ? 'Launch Date Span' : 'Projected Span';
@@ -1055,10 +1053,10 @@ function renderTimeline() {
     <div class="summary-card"><div class="s-label">${launchLabel}</div><div class="s-value">${fmtShort(state.startDate)} – ${fmtShort(state.endDate)}</div></div>
     <div class="summary-card"><div class="s-label">Dedication</div><div class="s-value">${state.pct}%</div></div>
     <div class="summary-card"><div class="s-label">Total Project Hours</div><div class="s-value">${fmtNum(state.projectHours)} hrs</div></div>
-    <div class="summary-card" style="border:2px solid #0d1719;background:rgba(1,59,70,.06);"><div class="s-label">Evaluation Ends</div><div class="s-value" style="color:#0d1719">${fmtShort(schedule[6].end)}</div></div>`;
+    <div class="summary-card" style="border:2px solid #0d1719;background:rgba(1,59,70,.06);"><div class="s-label">Yield Ends</div><div class="s-value" style="color:#0d1719">${fmtShort(schedule[4].end)}</div></div>`;
 
   // Gantt
-  const totalCalDays = Math.ceil((schedule[6].end - state.startDate) / 86400000) + 1;
+  const totalCalDays = Math.ceil((schedule[4].end - state.startDate) / 86400000) + 1;
   const container = document.getElementById('ganttContainer');
   let html = '<div class="gantt">';
 
@@ -1066,10 +1064,10 @@ function renderTimeline() {
   html += '<div class="gantt-header" style="padding-left:140px;">';
   let monthCursor = new Date(state.startDate.getFullYear(), state.startDate.getMonth(), 1);
   const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  while (monthCursor <= schedule[6].end) {
+  while (monthCursor <= schedule[4].end) {
     const mStart = new Date(Math.max(monthCursor, state.startDate));
     const nextMonth = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1);
-    const mEnd = new Date(Math.min(nextMonth - 86400000, schedule[6].end));
+    const mEnd = new Date(Math.min(nextMonth - 86400000, schedule[4].end));
     const span = Math.ceil((mEnd - mStart) / 86400000) + 1;
     html += `<div class="gantt-header-label" style="width:${(span / totalCalDays) * 100}%">${monthNames[monthCursor.getMonth()]} ${monthCursor.getFullYear()}</div>`;
     monthCursor = nextMonth;
@@ -1084,15 +1082,15 @@ function renderTimeline() {
     const spanDays = Math.ceil((phase.end - phase.start) / 86400000) + 1;
     const leftPct = (offDays / totalCalDays) * 100;
     const widthPct = (spanDays / totalCalDays) * 100;
-    const isEval = idx === 6;
+    const isYield = idx === 4;
     const markerLabel = state.mode === 'launch' ? 'Launch Date' : 'Projected Launch';
     html += `<div class="gantt-row">
       <div class="gantt-label"><span class="phase-dot" style="background:${phase.color}"></span>${phase.name}</div>
       <div class="gantt-track">
-        <div class="gantt-bar" style="left:${leftPct}%;width:${widthPct}%;background:${phase.color};${isEval ? 'opacity:0.7;border:2px dashed ' + phase.color + ';' : ''}">
+        <div class="gantt-bar" style="left:${leftPct}%;width:${widthPct}%;background:${phase.color};${isYield ? 'opacity:0.7;border:2px dashed ' + phase.color + ';' : ''}">
           ${widthPct > 8 ? fmtNum(phase.hours) + ' hrs' : ''}
           <div class="gantt-tooltip">
-            <strong>${phase.name}</strong>${isEval ? ' (beyond ' + markerLabel + ')' : ''}<br>
+            <strong>${phase.name}</strong>${isYield ? ' (beyond ' + markerLabel + ')' : ''}<br>
             ${fmtDate(phase.start)} — ${fmtDate(phase.end)}<br>
             ${phase.workdays} workdays &middot; ${fmtNum(phase.hours)} hrs &middot; ~${fmtNum(phase.dailyHours)} hrs/day
           </div>
@@ -1112,15 +1110,15 @@ function renderTimeline() {
   const details = document.getElementById('scheduleDetails');
   let dhtml = '<table class="phase-table"><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Workdays</th><th>Hours</th><th>Hrs/Day</th></tr></thead><tbody>';
   schedule.forEach((p, idx) => {
-    const isEval = idx === 6;
-    dhtml += `<tr${isEval ? ' style="background:rgba(1,59,70,.06);"' : ''}>
-      <td><span class="phase-dot" style="background:${p.color}"></span>${p.name}${isEval ? ' *' : ''}</td>
+    const isYield = idx === 4;
+    dhtml += `<tr${isYield ? ' style="background:rgba(1,59,70,.06);"' : ''}>
+      <td><span class="phase-dot" style="background:${p.color}"></span>${p.name}${isYield ? ' *' : ''}</td>
       <td>${fmtDate(p.start)}</td><td>${fmtDate(p.end)}</td><td>${p.workdays}</td>
       <td class="phase-hours">${fmtNum(p.hours)}</td><td>~${fmtNum(p.dailyHours)}</td>
     </tr>`;
   });
   dhtml += '</tbody></table>';
-  dhtml += `<p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem;">* Evaluation phase extends beyond the ${vertLabel.toLowerCase()}.</p>`;
+  dhtml += `<p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem;">* Yield phase extends beyond the ${vertLabel.toLowerCase()}.</p>`;
   details.innerHTML = dhtml;
 }
 
