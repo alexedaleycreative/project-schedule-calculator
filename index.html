@@ -11,40 +11,40 @@
   :root {
     /* Primary palette */
     --black:#000000;
-    --cyan:#19FCFC;            /* bright accent — sparing pop only */
-    --teal:#013B46;            /* Gothic Teal — primary brand color */
+    --cyan:#19E3CF;            /* bright accent — sparing pop only */
+    --teal:#0F3E43;            /* Gothic Teal — primary brand color */
     --white:#FFFFFF;
     /* Secondary palette */
-    --aqua:#00A9C9;            /* Aqua More — secondary accent */
-    --gray:#DADADA;
-    --trad-teal:#017A91;
+    --aqua:#0F3E43;            /* Aqua More — secondary accent */
+    --gray:#C4CCCC;
+    --trad-teal:#0F3E43;
     /* Functional tokens */
     --ink:#0d1719;             /* body text + icons */
     --muted:#5c6c6f;           /* secondary text */
-    --line:#e8ebeb;            /* hairline borders */
-    --tint:rgba(1,59,70,.045); /* faint teal wash (hovers/soft fills) */
-    --tint2:rgba(25,252,252,.10); /* cyan focus wash */
-    --teal-hover:#02525f;
-    --shadow:0 1px 0 rgba(1,59,70,.02), 0 18px 40px -28px rgba(1,59,70,.45);
-    --radius:14px; --radius-sm:10px; --radius-rect:6px;
+    --line:#C4CCCC;            /* hairline borders */
+    --tint:rgba(15,62,67,.045); /* faint teal wash (hovers/soft fills) */
+    --tint2:rgba(25,227,207,.22); /* cyan focus wash */
+    --teal-hover:#0A2E33;
+    --shadow:none;
+    --radius:0; --radius-sm:0; --radius-rect:0;
     --font-ui:'Jost', system-ui, -apple-system, sans-serif;
 
     /* Compatibility aliases (original rules + inline styles reference these) */
-    --primary:#013B46;
-    --primary-light:#02525f;
-    --primary-bg:rgba(1,59,70,.045);
+    --primary:#0F3E43;
+    --primary-light:#0A2E33;
+    --primary-bg:rgba(15,62,67,.045);
     --surface:#ffffff;
     --text:#0d1719;
     --text-muted:#5c6c6f;
-    --border:#e8ebeb;
-    --success:#013B46;
+    --border:#C4CCCC;
+    --success:#0F3E43;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: var(--font-ui);
-    background: var(--white);
+    background: #E8ECEC;
     color: var(--ink);
     min-height: 100vh;
     padding: 2rem 1rem;
@@ -65,7 +65,7 @@
   }
   .app-header-text { min-width: 0; }
   header h1 {
-    font-size: 1.4rem; font-weight: 600; color: var(--teal);
+    font-size: 1.4rem; font-weight: 800; color: #000;
     text-transform: uppercase; letter-spacing: .11em; line-height: 1.2;
   }
   header p { color: var(--muted); font-size: 0.9rem; margin-top: 0.3rem; }
@@ -77,7 +77,7 @@
   }
   .progress-step-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
   .step-circle {
-    width: 36px; height: 36px; border-radius: 50%;
+    width: 36px; height: 36px; border-radius:0;
     display: flex; align-items: center; justify-content: center;
     font-weight: 600; font-size: 0.85rem;
     border: 1.5px solid var(--line); background: var(--white); color: var(--muted);
@@ -94,7 +94,7 @@
 
   /* Cards */
   .card {
-    background: var(--white); border-radius: var(--radius); border: 1px solid var(--line);
+    background: var(--white); border-radius:0; border: 1px solid var(--line);
     padding: 1.9rem 2rem 2rem; box-shadow: var(--shadow); margin-bottom: 1.5rem;
   }
   /* Card header: ink icon + uppercase teal title + muted subtitle, dashed divider */
@@ -106,7 +106,7 @@
   .card-icon svg { width: 24px; height: 24px; fill: var(--ink); stroke: none; display: block; }
   .card-head-text { min-width: 0; }
   .card h2 {
-    font-size: 1rem; font-weight: 600; color: var(--teal);
+    font-size: 1rem; font-weight: 800; color: #000;
     text-transform: uppercase; letter-spacing: .08em; line-height: 1.3;
   }
   .card .subtitle { color: var(--muted); font-size: 0.88rem; margin-top: 0.35rem; line-height: 1.45; }
@@ -115,7 +115,7 @@
   /* Path selection */
   .path-options { display: flex; gap: 1.5rem; margin-top: 1.25rem; }
   .path-card {
-    flex: 1; padding: 1.75rem 1.5rem; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    flex: 1; padding: 1.75rem 1.5rem; border: 1.5px solid var(--line); border-radius:0;
     cursor: pointer; transition: all 0.2s; text-align: center; background: var(--white);
   }
   .path-card:hover { border-color: var(--teal); background: var(--tint); }
@@ -129,12 +129,12 @@
   .form-group input[type="date"],
   .form-group input[type="text"] {
     width: 100%; padding: 0.6rem 0.75rem; border: 1.5px solid var(--line);
-    border-radius: 8px; font-size: 0.95rem; color: var(--ink); outline: none;
+    border-radius:0; font-size: 0.95rem; color: var(--ink); outline: none;
     transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit; background: var(--white);
   }
   .form-group input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--tint2); }
 
-  .info-box { background: var(--tint); border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+  .info-box { background: var(--tint); border: 1px solid var(--line); border-radius:0; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
   .info-box .label { font-size: 0.72rem; color: var(--aqua); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.3rem; font-weight: 600; }
   .info-box .value { font-size: 1.4rem; font-weight: 700; color: var(--teal); }
   .info-row { display: flex; gap: 1rem; flex-wrap: wrap; }
@@ -142,10 +142,10 @@
 
   .btn {
     display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.5rem;
-    border: 1px solid transparent; border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600;
+    border: 1px solid transparent; border-radius:0; font-size: 0.9rem; font-weight: 600;
     cursor: pointer; transition: all 0.2s; font-family: inherit;
   }
-  .btn-primary { background: var(--teal); color: var(--white); border-color: var(--teal); }
+  .btn-primary { background: #000; color: var(--cyan); border-color: #000; }
   .btn-primary:hover { background: var(--teal-hover); border-color: var(--teal-hover); }
   .btn-secondary { background: transparent; color: var(--muted); border: 1.5px solid var(--line); }
   .btn-secondary:hover { border-color: var(--teal); color: var(--teal); background: var(--tint); }
@@ -165,7 +165,7 @@
   .deliverable-toggles { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.25rem 0 0.5rem; }
   .toggle-card {
     display: flex; align-items: flex-start; gap: 0.75rem;
-    padding: 1rem 1.25rem; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    padding: 1rem 1.25rem; border: 1.5px solid var(--line); border-radius:0;
     cursor: pointer; transition: border-color 0.2s, background 0.2s; flex: 1; min-width: 170px; background: var(--white);
   }
   .toggle-card.selected { border-color: var(--teal); background: var(--tint); }
@@ -181,7 +181,7 @@
     margin-bottom: 0.85rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--line);
   }
   .item-card {
-    border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 0.5rem;
+    border: 1px solid var(--line); border-radius:0; padding: 0.85rem 1rem; margin-bottom: 0.5rem;
     background: var(--tint);
   }
   .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
@@ -193,7 +193,7 @@
   .field-group label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--aqua); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 0.3rem; }
   .field-group select,
   .field-group input[type="number"] {
-    width: 100%; padding: 0.45rem 0.5rem; border: 1.5px solid var(--line); border-radius: var(--radius-rect);
+    width: 100%; padding: 0.45rem 0.5rem; border: 1.5px solid var(--line); border-radius:0;
     font-size: 0.85rem; color: var(--ink); background: var(--white); outline: none; font-family: inherit;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
@@ -207,7 +207,7 @@
   .item-hours { text-align: right; font-weight: 700; color: var(--teal); margin-top: 0.45rem; font-size: 0.9rem; }
   .add-item-btn {
     display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem;
-    border: 1.5px dashed var(--teal); border-radius: var(--radius-sm); background: none;
+    border: 1.5px dashed var(--teal); border-radius:0; background: none;
     color: var(--teal); font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 0.5rem; font-family: inherit;
   }
   .add-item-btn:hover { background: var(--tint); }
@@ -217,7 +217,7 @@
     padding-top: 0.5rem; border-top: 1px solid var(--line);
   }
   .grand-total {
-    background: var(--tint); border: 1px solid var(--line); border-radius: 8px; padding: 0.85rem 1.25rem;
+    background: var(--tint); border: 1px solid var(--line); border-radius:0; padding: 0.85rem 1.25rem;
     margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;
   }
   .gt-label { font-weight: 600; font-size: 0.95rem; color: var(--ink); }
@@ -225,13 +225,13 @@
 
   /* Review step editable inputs */
   .phase-hours-input {
-    width: 80px; padding: 0.35rem 0.5rem; border: 1.5px solid var(--line); border-radius: var(--radius-rect);
+    width: 80px; padding: 0.35rem 0.5rem; border: 1.5px solid var(--line); border-radius:0;
     font-size: 0.9rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums;
     color: var(--ink); outline: none; background: var(--white); font-family: inherit;
   }
   .phase-hours-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px var(--tint2); }
   .total-hours-input {
-    width: 110px; padding: 0.5rem 0.6rem; border: 1.5px solid var(--line); border-radius: 8px;
+    width: 110px; padding: 0.5rem 0.6rem; border: 1.5px solid var(--line); border-radius:0;
     font-size: 1.4rem; font-weight: 700; color: var(--teal); text-align: center;
     background: transparent; outline: none; font-family: inherit;
   }
@@ -245,15 +245,15 @@
   }
   .phase-table td { padding: 0.75rem; border-bottom: 1px solid var(--line); font-size: 0.9rem; color: var(--ink); }
   .phase-table tr:last-child td { border-bottom: none; }
-  .phase-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.5rem; vertical-align: middle; }
+  .phase-dot { display: inline-block; width: 10px; height: 10px; border-radius:0; margin-right: 0.5rem; vertical-align: middle; }
   .phase-hours { font-weight: 700; font-variant-numeric: tabular-nums; }
   .phase-bar-cell { width: 35%; }
-  .phase-bar-track { height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
-  .phase-bar-fill { height: 100%; border-radius: 5px; transition: width 0.4s ease; }
+  .phase-bar-track { height: 10px; background: var(--line); border-radius:0; overflow: hidden; }
+  .phase-bar-fill { height: 100%; border-radius:0; transition: width 0.4s ease; }
 
   /* Summary cards */
   .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
-  .summary-card { background: var(--tint); border: 1px solid var(--line); border-radius: 8px; padding: 0.8rem; text-align: center; }
+  .summary-card { background: var(--tint); border: 1px solid var(--line); border-radius:0; padding: 0.8rem; text-align: center; }
   .summary-card .s-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--aqua); font-weight: 600; margin-bottom: 0.25rem; }
   .summary-card .s-value { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
 
@@ -267,9 +267,9 @@
   .gantt-header-label { font-size: 0.7rem; color: var(--muted); text-align: center; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .gantt-row { display: flex; align-items: center; margin-bottom: 0.5rem; }
   .gantt-label { width: 140px; flex-shrink: 0; font-size: 0.8rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 0.4rem; }
-  .gantt-track { flex: 1; height: 28px; background: var(--tint); border-radius: 4px; position: relative; }
+  .gantt-track { flex: 1; height: 28px; background: var(--tint); border-radius:0; position: relative; }
   .gantt-bar {
-    position: absolute; height: 100%; border-radius: 4px;
+    position: absolute; height: 100%; border-radius:0;
     display: flex; align-items: center; justify-content: center;
     font-size: 0.7rem; font-weight: 600; color: var(--white); white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; padding: 0 0.5rem;
@@ -278,7 +278,7 @@
   .gantt-bar:hover { opacity: 0.85; transform: scaleY(1.1); }
   .gantt-tooltip {
     position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-    background: var(--ink); color: var(--white); padding: 0.5rem 0.75rem; border-radius: 6px;
+    background: var(--ink); color: var(--white); padding: 0.5rem 0.75rem; border-radius:0;
     font-size: 0.75rem; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10;
   }
   .gantt-bar:hover .gantt-tooltip { opacity: 1; }
@@ -566,11 +566,11 @@
 <script>
 // ================= CONSTANTS =================
 const PHASES = [
-  { name: 'Discover',          pct: 0.05, color: '#5CC4D4' },
-  { name: 'Analyze',           pct: 0.20, color: '#00A9C9' },
-  { name: 'Learning Solution', pct: 0.50, color: '#017A91' },
-  { name: 'Execute',           pct: 0.05, color: '#013B46' },
-  { name: 'Yield',             pct: 0.20, color: '#02697D' },
+  { name: 'Discover',          pct: 0.05, color: '#0F3E43' },
+  { name: 'Analyze',           pct: 0.20, color: '#126766' },
+  { name: 'Learning Solution', pct: 0.50, color: '#149189' },
+  { name: 'Execute',           pct: 0.05, color: '#17BAAC' },
+  { name: 'Yield',             pct: 0.20, color: '#19E3CF' },
 ];
 const CORE_PCT = 0.80;
 
@@ -1053,7 +1053,7 @@ function renderTimeline() {
     <div class="summary-card"><div class="s-label">${launchLabel}</div><div class="s-value">${fmtShort(state.startDate)} – ${fmtShort(state.endDate)}</div></div>
     <div class="summary-card"><div class="s-label">Dedication</div><div class="s-value">${state.pct}%</div></div>
     <div class="summary-card"><div class="s-label">Total Project Hours</div><div class="s-value">${fmtNum(state.projectHours)} hrs</div></div>
-    <div class="summary-card" style="border:2px solid #0d1719;background:rgba(1,59,70,.06);"><div class="s-label">Yield Ends</div><div class="s-value" style="color:#0d1719">${fmtShort(schedule[4].end)}</div></div>`;
+    <div class="summary-card" style="border:2px solid #0d1719;background:rgba(15,62,67,.06);"><div class="s-label">Yield Ends</div><div class="s-value" style="color:#0d1719">${fmtShort(schedule[4].end)}</div></div>`;
 
   // Gantt
   const totalCalDays = Math.ceil((schedule[4].end - state.startDate) / 86400000) + 1;
@@ -1111,7 +1111,7 @@ function renderTimeline() {
   let dhtml = '<table class="phase-table"><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Workdays</th><th>Hours</th><th>Hrs/Day</th></tr></thead><tbody>';
   schedule.forEach((p, idx) => {
     const isYield = idx === 4;
-    dhtml += `<tr${isYield ? ' style="background:rgba(1,59,70,.06);"' : ''}>
+    dhtml += `<tr${isYield ? ' style="background:rgba(15,62,67,.06);"' : ''}>
       <td><span class="phase-dot" style="background:${p.color}"></span>${p.name}${isYield ? ' *' : ''}</td>
       <td>${fmtDate(p.start)}</td><td>${fmtDate(p.end)}</td><td>${p.workdays}</td>
       <td class="phase-hours">${fmtNum(p.hours)}</td><td>~${fmtNum(p.dailyHours)}</td>
